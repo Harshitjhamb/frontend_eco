@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoMetrics - Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<style>
+    #mainTrendChart {
+        height: 380px !important;
+        width: 100% !important;
+    }
+</style>
+
+<body class="page-dashboard">
+
+    <nav class="navbar">
+        <div class="nav-inner">
+
+            <!-- LEFT -->
+            <div class="nav-left">
+                <div class="nav-brand">
+                    <i class="fa-solid fa-leaf brand-icon-small"></i>
+                    <span>EcoMetrics</span>
+                </div>
+            </div>
+
+            <!-- CENTER -->
+            <div class="nav-center">
+                <div id="current-station" class="current-station-name">Loading...</div>
+            </div>
+
+            <!-- RIGHT -->
+            <div class="nav-right">
+
+                <!-- Station Switcher -->
+                <select id="stationSwitcher" class="station-switcher-nav"></select>
+
+                <!-- Username & Age -->
+                <span id="nav-user" class="nav-username"></span>
+                <span id="nav-age" class="nav-age"></span>            
+                <!-- Advanced Search -->
+                <button class="nav-link" onclick="openSearchModal()">
+                    <i class="fa-solid fa-magnifying-glass"></i> Advanced Search
+                </button>
+
+            </div>
+
+        </div>
+    </nav>
+
+    <div class="dashboard-content">
+
+        <div class="hero-section">
+            <div class="main-temp"><span id="hero-temp">--</span>°</div>
+            <div class="main-condition" id="hero-condition">--</div>
+            <div class="hl-temp">H: <span id="temp-high">--</span>° L: <span id="temp-low">--</span>°</div>
+        </div>
+
+        <div class="glass-panel aqi-panel improved-aqi-card">
+            <div class="panel-header">
+                <i class="fa-solid fa-wind"></i> AIR QUALITY
+            </div>
+
+            <div class="aqi-main">
+                <span id="aqi-val">--</span>
+                <span id="aqi-badge">--</span>
+            </div>
+            <div id="aqi-warning" class="warning-tile" style="display:none;">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span id="aqi-warning-text"></span>
+            </div>
+
+
+            <hr class="panel-divider">
+
+            <div class="chart-section">
+                <div class="chart-title">Today's Temperature</div>
+                <div class="mini-chart-area">
+                    <canvas id="miniTrendChart"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="grid-title">WEATHER CONDITIONS</div>
+
+        <div class="grid-2x2 weather-grid">
+
+
+            <!-- Humidity -->
+            <div class="weather-card glass-panel small-panel">
+                <div class="weather-icon humid-icon"><i class="fa-solid fa-droplet"></i></div>
+                <div class="weather-info">
+                    <div class="weather-label">Humidity</div>
+                    <div class="weather-value" id="val-humid">--</div>
+                    <small class="weather-unit">%</small>
+                </div>
+            </div>
+            <!-- FEELSLIKE -->
+            <div class="weather-card glass-panel small-panel">
+                <div class="weather-icon feel-icon">
+                    <i class="fa-solid fa-temperature-three-quarters"></i>
+                </div>
+                <div class="weather-info">
+                    <div class="weather-label">Feels Like</div>
+                    <div class="weather-value" id="val-feelslike">--</div>
+                    <small class="weather-unit">°C</small>
+                </div>
+            </div>
+            <!-- DIRECTION -->
+            <div class="weather-card glass-panel small-panel">
+                <div class="weather-icon condition-icon">
+                    <i class="fa-solid fa-cloud-sun"></i>
+                </div>
+                <div class="weather-info">
+                    <div class="weather-label">Condition</div>
+                    <div class="weather-value" id="val-condition">--</div>
+                </div>
+            </div>
+
+            <!-- PRESSURE -->
+            <div class="weather-card glass-panel small-panel">
+                <div class="weather-icon press-icon"><i class="fa-solid fa-gauge"></i></div>
+                <div class="weather-info">
+                    <div class="weather-label">Pressure</div>
+                    <div class="weather-value" id="val-press">--</div>
+                    <small class="weather-unit">hPa</small>
+                </div>
+            </div>
+            <!-- WIND -->
+            <div class="weather-card glass-panel small-panel">
+                <div class="weather-icon wind-icon"><i class="fa-solid fa-wind"></i></div>
+                <div class="weather-info">
+                    <div class="weather-label">Wind</div>
+                    <div class="weather-value" id="val-wind">--</div>
+                    <small class="weather-unit">km/h</small>
+                </div>
+            </div>
+            <!-- WIND DIR -->
+            <div class="weather-card glass-panel small-panel">
+                <div class="weather-icon winddir-icon">
+                    <i class="fa-solid fa-compass"></i>
+                </div>
+                <div class="weather-info">
+                    <div class="weather-label">Wind Direction</div>
+                    <div class="weather-value" id="val-winddir">--</div>
+                    <small class="weather-unit"> degree </small>
+                </div>
+            </div>
+            <!-- WIND GUST  -->
+            <div class="weather-card glass-panel small-panel">
+                <div class="weather-icon windgust-icon">
+                    <i class="fa-solid fa-wind"></i>
+                </div>
+                <div class="weather-info">
+                    <div class="weather-label">Wind Gust</div>
+                    <div class="weather-value" id="val-windgust">--</div>
+                    <small class="weather-unit">km/h</small>
+                </div>
+            </div>
+
+            <!-- VISIBILITY -->
+            <div class="weather-card glass-panel small-panel">
+                <div class="weather-icon vis-icon"><i class="fa-regular fa-eye"></i></div>
+                <div class="weather-info">
+                    <div class="weather-label">Visibility</div>
+                    <div class="weather-value" id="val-vis">--</div>
+                    <small class="weather-unit">km</small>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="split-dashboard">
+
+            <div class="sun-wrapper">
+                <div class="grid-title" style="margin-top: 0;">SUNRISE & SUNSET</div>
+                <div class="glass-panel sun-panel-box">
+
+                    <div class="sun-row">
+                        <div class="sun-icon-box rise-bg">
+                            <i class="fa-solid fa-arrow-up-long"></i>
+                            <i class="fa-regular fa-sun"></i>
+                        </div>
+                        <div class="sun-info">
+                            <span class="s-label">Sunrise</span>
+                            <span class="s-time" id="sun-rise">--:--</span>
+                        </div>
+                    </div>
+
+                    <hr class="sun-divider">
+
+                    <div class="sun-row">
+                        <div class="sun-icon-box set-bg">
+                            <i class="fa-solid fa-arrow-down-long"></i>
+                            <i class="fa-regular fa-moon"></i>
+                        </div>
+                        <div class="sun-info">
+                            <span class="s-label">Sunset</span>
+                            <span class="s-time" id="sun-set">--:--</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="pollutant-wrapper">
+                <div class="grid-title" style="margin-top: 0;">POLLUTANT DETAILS</div>
+
+                <div class="pollutant-fixed-grid">
+                    <div class="glass-panel pol-card" onclick="openTrendModal('PM2.5', 'µg/m³')">
+                        <div class="p-label">PM2.5</div>
+                        <div class="p-val" id="val-pm25">--</div>
+                        <div class="p-unit">µg/m³</div>
+                    </div>
+                    <div class="glass-panel pol-card" onclick="openTrendModal('PM10', 'µg/m³')">
+                        <div class="p-label">PM10</div>
+                        <div class="p-val" id="val-pm10">--</div>
+                        <div class="p-unit">µg/m³</div>
+                    </div>
+                    <div class="glass-panel pol-card" onclick="openTrendModal('SO2', 'ppb')">
+                        <div class="p-label">SO2</div>
+                        <div class="p-val" id="val-so2">--</div>
+                        <div class="p-unit">ppb</div>
+                    </div>
+                    <div class="glass-panel pol-card" onclick="openTrendModal('NO2', 'ppb')">
+                        <div class="p-label">NO2</div>
+                        <div class="p-val" id="val-no2">--</div>
+                        <div class="p-unit">ppb</div>
+                    </div>
+
+                    <div class="glass-panel pol-card" onclick="openTrendModal('O3', 'ppb')">
+                        <div class="p-label">O3</div>
+                        <div class="p-val" id="val-o3">--</div>
+                        <div class="p-unit">ppb</div>
+                    </div>
+                    <div class="glass-panel pol-card" onclick="openTrendModal('CO', 'mg/m³')">
+                        <div class="p-label">CO</div>
+                        <div class="p-val" id="val-co">--</div>
+                        <div class="p-unit">mg/m³</div>
+                    </div>
+                    <div class="glass-panel pol-card" onclick="openTrendModal('NH3', 'µg/m³')">
+                        <div class="p-label">NH3</div>
+                        <div class="p-val" id="val-nh3">--</div>
+                        <div class="p-unit">µg/m³</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="modal-trend" class="modal-overlay">
+        <div class="trend-modal-content">
+            <div class="trend-header">
+                <h3 id="trend-title">Trend</h3>
+                <span id="trend-unit">µg/m³</span>
+                <i class="fa-solid fa-xmark close-icon" onclick="closeModal('modal-trend')"></i>
+            </div>
+            <div class="trend-main-value">
+                <span id="trend-big-val">--</span>
+            </div>
+            <div class="trend-stats-row">
+                <div class="stat-box">Max <span id="s-max">--</span></div>
+                <div class="stat-box">Min <span id="s-min">--</span></div>
+                <div class="stat-box">Avg <span id="s-avg">--</span></div>
+            </div>
+            <div class="trend-chart-wrapper">
+                <canvas id="mainTrendChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-search" class="modal-overlay">
+        <div class="search-modal-content">
+            Station
+
+            <form id="adv-search-form">
+
+                <!-- STATION SELECTION -->
+                <div class="form-group">
+                    <div class="label-row">
+                        <label>Station Name</label>
+                        <a href="#" class="select-all-link" onclick="toggleAll(this)">Select All</a>
+                    </div>
+                    <div class="station-box" id="adv-station-list"></div>
+                </div>
+
+                <!-- DATE RANGE -->
+                <div class="form-row">
+                    <div class="col-half">
+                        <label>Start Date</label>
+                        <input type="date" id="adv-start-date" class="dark-input">
+                    </div>
+
+                    <div class="col-half">
+                        <label>End Date</label>
+                        <input type="date" id="adv-end-date" class="dark-input">
+                    </div>
+                </div>
+
+                <!-- TIME RANGE -->
+                <div class="form-row">
+                    <div class="col-half">
+                        <label>Start Time</label>
+                        <input type="time" id="adv-start-time" class="dark-input" value="00:00">
+                    </div>
+
+                    <div class="col-half">
+                        <label>End Time</label>
+                        <input type="time" id="adv-end-time" class="dark-input" value="23:59">
+                    </div>
+                </div>
+
+                <!-- POLLUTANTS -->
+                <div class="form-group">
+                    <div class="label-row">
+                        <label>Pollutants</label>
+                        <a href="#" class="select-all-link" onclick="toggleAll(this)">Select All</a>
+                    </div>
+
+                    <div class="checkbox-grid-3">
+                        <label><input type="checkbox" value="PM2.5" checked> PM2.5</label>
+                        <label><input type="checkbox" value="PM10"> PM10</label>
+                        <label><input type="checkbox" value="SO2"> SO2</label>
+                        <label><input type="checkbox" value="NO2"> NO2</label>
+                        <label><input type="checkbox" value="O3"> O3</label>
+                        <label><input type="checkbox" value="NH3"> NH3</label>
+                        <label><input type="checkbox" value="CO"> CO</label>
+                        <label><input type="checkbox" value="AQI"> AQI</label>
+                    </div>
+                </div>
+
+                <!-- WEATHER -->
+                <div class="form-group">
+                    <div class="label-row">
+                        <label>Weather Information</label>
+                        <a href="#" class="select-all-link" onclick="toggleAll(this)">Select All</a>
+                    </div>
+
+                    <div class="checkbox-grid-3">
+                        <label><input type="checkbox" value="temp"> Temperature</label>
+                        <label><input type="checkbox" value="humid"> Humidity</label>
+                        <label><input type="checkbox" value="pres"> Pressure</label>
+                        <label><input type="checkbox" value="wind"> Wind</label>
+                        <label><input type="checkbox" value="clouds"> Clouds</label>
+                        <label><input type="checkbox" value="rain"> Precipitation</label>
+                    </div>
+                </div>
+
+                <!-- ==========================
+                     AGGREGATION (DYNAMIC ROWS)
+                     ========================== -->
+                <div class="form-group">
+                    <div class="label-row">
+                        <label>Aggregation</label>
+                        <button type="button" id="add-agg-row" class="btn-footer btn-search"
+                            style="padding:4px 10px; font-size:12px;">+ Add Aggregation</button>
+                    </div>
+                    <small class="help-text">First choose function, then field. You can add multiple
+                        aggregations.</small>
+                    <div id="aggregation-rows"></div>
+                </div>
+
+                <!-- GROUP BY SECTION -->
+                <div class="form-group">
+                    <label>Group By (Fields)</label>
+                    <div class="select-wrapper">
+                        <select id="groupby-fields" class="dark-input" multiple size="6"
+                        style="height:120px; overflow-y:auto;"> 
+                        <option value="pr.location_name">Station Name</option>
+                            <!-- JS will insert only user-selected fields here -->
+                        </select>
+                    </div>
+                </div>
+
+                <!-- HAVING FILTER (Optional) -->
+                <div class="form-group">
+                    <div class="label-row">
+                        <label>HAVING Filters</label>
+                        <button type="button" id="add-having-row" class="btn-footer btn-search"
+                            style="padding:4px 10px; font-size:12px;">+ Add HAVING</button>
+                    </div>
+                    <small class="help-text">Add one or more HAVING conditions on aggregated values.</small>
+                    <div id="having-rows"></div>
+                </div>
+
+                <!-- ORDER BY SECTION -->
+                <div class="form-group">
+                    <label>Order By</label>
+                    <div class="form-row">
+                        <!-- Order-by field dropdown -->
+                        <div class="col-half">
+                            <label>Field</label>
+                            <div class="select-wrapper">
+                                <select id="order-by-field" class="dark-input">
+                                    <!-- JS will populate based on selected fields -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Order direction -->
+                        <div class="col-half">
+                            <label>Direction</label>
+                            <div class="select-wrapper">
+                                <select id="order-by-direction" class="dark-input">
+                                    <option value="ASC">Ascending</option>
+                                    <option value="DESC">Descending</option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-footer btn-reset"
+                        onclick="document.getElementById('adv-search-form').reset()">Reset</button>
+
+                    <button type="button" class="btn-footer btn-cancel"
+                        onclick="closeModal('modal-search')">Cancel</button>
+
+                    <button onclick="buildAndRunAdvancedSearch()" type="button" class="btn-footer btn-search">Search</button>
+                </div>
+
+            </form>
+        </div>
+
+    </div>
+
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
+
+
+

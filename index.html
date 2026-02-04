@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoMetrics - Login</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="page-login">
+
+    <div class="login-container">
+        <div class="glass-card login-card">
+            <div class="logo-header">
+                <i class="fa-solid fa-leaf brand-icon"></i>
+                <h1>EcoMetrics</h1>
+                <p>Environmental Intelligence</p>
+            </div>
+
+            <form id="login-form" onsubmit="event.preventDefault(); handleLogin();">
+
+                <!-- NAME FIELDS -->
+                <div class="input-group-row">
+                    <div class="input-block">
+                        <input type="text" id="fname" placeholder="First Name *" required>
+                    </div>
+                    <div class="input-block">
+                        <input type="text" id="mname" placeholder="Middle Name">
+                    </div>
+                    <div class="input-block">
+                        <input type="text" id="lname" placeholder="Last Name *" required>
+                    </div>
+                </div>
+
+                <!-- AGE FIELD -->
+                <div class="input-block">
+                    <input type="number" id="age" placeholder="Age *" min="1" max="120" required>
+                </div>
+
+                <!-- STATION DROPDOWN -->
+                <div class="input-block location-wrapper">
+                    <i class="fa-solid fa-location-dot input-icon"></i>
+                    <input type="text" id="location-input" placeholder="Select Monitoring Station *" autocomplete="off" required>
+                    <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+                    <div id="station-dropdown" class="dropdown-menu"></div>
+                </div>
+
+                <button type="button" class="btn-login" onclick="handleLogin()">Launch Dashboard</button>
+            </form>
+
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

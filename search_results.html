@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoMetrics - Search Results</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            background: #090909;
+            font-family: "Inter", Arial, sans-serif;
+            margin: 0;
+            padding: 30px;
+            color: #f1f1f1;
+        }
+
+        /* Page Title */
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 25px;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        .page-title i {
+            margin-right: 10px;
+            color: #2c75ff;
+        }
+
+        /* Main container */
+        .results-container {
+            max-width: 1250px;
+            margin: auto;
+        }
+
+        /* Glass Effect Card */
+        .results-box {
+            background: rgba(40, 40, 40, 0.30);
+            backdrop-filter: blur(16px);
+            padding: 25px;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+        }
+
+        /* Scroll section */
+        .results-table-wrapper {
+            max-height: 72vh;
+            overflow-y: auto;
+            border-radius: 14px;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 15px;
+            color: #e7e7e7;
+        }
+
+        thead th {
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(10px);
+            padding: 14px 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            font-weight: 600;
+        }
+
+        tbody td {
+            padding: 12px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            color: #dcdcdc;
+        }
+
+        tbody tr:hover td {
+            background: rgba(255, 255, 255, 0.07);
+            transition: 0.25s ease;
+        }
+
+        .empty-msg {
+            text-align: center;
+            padding: 20px;
+            opacity: 0.8;
+        }
+
+        /* Back button */
+        .back-btn {
+            margin-top: 25px;
+            display: inline-block;
+            padding: 12px 22px;
+            border-radius: 10px;
+            text-decoration: none;
+            background: linear-gradient(135deg, #2c75ff, #1d55d8);
+            color: white;
+            font-weight: 600;
+            transition: 0.25s ease;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+        }
+
+        .back-btn:hover {
+            background: linear-gradient(135deg, #1d55d8, #2c75ff);
+            transform: translateY(-2px);
+        }
+
+        .back-btn i {
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="results-container">
+
+        <div class="page-title">
+            <i class="fa-solid fa-magnifying-glass"></i> Search Results
+        </div>
+
+        <div class="results-box">
+            <div class="results-table-wrapper">
+                <table id="results-table">
+                    <thead id="results-thead"></thead>
+                    <tbody id="results-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <a href="dashboard.html" class="back-btn">
+            <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+        </a>
+
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const raw = sessionStorage.getItem("adv_search_results");
+
+            if (!raw) {
+                document.getElementById("results-tbody").innerHTML =
+                    `<tr><td colspan="5" class="empty-msg">No search results found.</td></tr>`;
+                return;
+            }
+
+            let rows = [];
+            try {
+                rows = JSON.parse(raw);
+            } catch (err) {
+                console.error("JSON Parse Error", err);
+                return;
+            }
+
+            const tableHead = document.getElementById("results-thead");
+            const tableBody = document.getElementById("results-tbody");
+
+            if (!rows.length) {
+                tableBody.innerHTML =
+                    `<tr><td colspan="5" class="empty-msg">No records found.</td></tr>`;
+                return;
+            }
+
+            const columns = Object.keys(rows[0]);
+            tableHead.innerHTML = `
+                <tr>${columns.map(c => `<th>${c}</th>`).join("")}</tr>
+            `;
+
+            tableBody.innerHTML = rows
+                .map(r => `
+                    <tr>
+                        ${columns.map(c => `<td>${r[c] ?? "--"}</td>`).join("")}
+                    </tr>
+                `)
+                .join("");
+        });
+    </script>
+</body>
+</html>
