@@ -795,37 +795,52 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
   if (document.body.classList.contains("page-dashboard")) {
-    const username = localStorage.getItem("eco_user");
-    let loc = localStorage.getItem("eco_loc");
-    let savedName = localStorage.getItem("eco_loc_name");
-    let user = null;
-    try {
-      const res = await fetch(`${API_BASE}/get_user?user_id=${userid}`);
-      user = await res.json();
-    } catch (e) {
-      console.error("User load error:", e);
-    }
-    if (!loc) {
-      window.location.href = "search_results.html";
-      return;
-    }
-    if (user && user.age != null) {
-      localStorage.setItem("eco_user_age", user.age);
-    }
-    const navUser = document.getElementById("nav-user");
-    if (navUser) {
-      navUser.textContent = username;
-    }
-    const ageSpan = document.getElementById("nav-age");
-    if (ageSpan && user && user.age != null) {
-      ageSpan.textContent = user.age;
-    }
-    const currStation = document.getElementById("current-station");
-    if (currStation) {
-      currStation.textContent = savedName || loc;
-    }
-    fetchData(loc);
+
+  const username = localStorage.getItem("eco_user");
+  const userId = localStorage.getItem("eco_user_id"); // ✅ ADD THIS
+  let loc = localStorage.getItem("eco_loc");
+  let savedName = localStorage.getItem("eco_loc_name");
+  let user = null;
+
+  if (!userId) {
+    console.error("user_id not found in localStorage");
+    return;
   }
+
+  try {
+    const res = await fetch(
+      `${API_BASE}/get_user?user_id=${encodeURIComponent(userId)}`
+    );
+    user = await res.json();
+  } catch (e) {
+    console.error("User load error:", e);
+  }
+
+  if (!loc) {
+    window.location.href = "search_results.html";
+    return;
+  }
+
+  if (user && user.age != null) {
+    localStorage.setItem("eco_user_age", user.age);
+  }
+
+  const navUser = document.getElementById("nav-user");
+  if (navUser) navUser.textContent = username;
+
+  const ageSpan = document.getElementById("nav-age");
+  if (ageSpan && user?.age != null) {
+    ageSpan.textContent = user.age;
+  }
+
+  const currStation = document.getElementById("current-station");
+  if (currStation) {
+    currStation.textContent = savedName || loc;
+  }
+
+  fetchData(loc);
+}
+
   document.querySelectorAll(".close, .close-btn").forEach(btn => {
     btn.onclick = () => closeModal("modal-trend");
   });
