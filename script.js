@@ -800,7 +800,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     let savedName = localStorage.getItem("eco_loc_name");
     let user = null;
     try {
-      const res = await fetch(`${API_BASE}/get_user?user_name=${username}`);
+      const res = await fetch(`${API_BASE}/get_user?user_id=${userid}`);
       user = await res.json();
     } catch (e) {
       console.error("User load error:", e);
